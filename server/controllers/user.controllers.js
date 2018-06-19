@@ -9,13 +9,11 @@ module.exports = {
       email, 
       password
     } = req.body
-    let role = req.body.role || 'user'
     let hashed = bcrypt.hashSync(password, bcrypt.genSaltSync())
     password = hashed
     let newUser = new user({  
       email, 
-      password,
-      role
+      password
     })
     newUser
       .save((err, result) => {
@@ -53,8 +51,7 @@ module.exports = {
           if (bcrypt.compareSync(password, userLogin.password)) {          
             let token = jwt.sign({
                         userId: userLogin.id,
-                        userEmail: userLogin.email,
-                        userRole: userLogin.role
+                        userEmail: userLogin.email
                     }, process.env.SECRET)
             res
               .status(200)

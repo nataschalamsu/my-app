@@ -5,9 +5,10 @@ const cors = require('cors')
 const app = express()
 const mongoose = require('mongoose')
 const users = require('./routes/users.js')
-// const tags = require('./routes/tags.js')
+const posts = require('./routes/posts.js')
+const comments = require('./routes/comments.js')
 
-mongoose.connect('mongodb://localhost/myapp_db');
+mongoose.connect(`mongodb://${process.env.DBUSER}:${process.env.DBPASS}@ds163870.mlab.com:63870/my_app`);
 
 app.use(cors());
 app.use(express.json());
@@ -21,7 +22,8 @@ db.once('open', function() {
 });
 
 app.use('/users', users);
-// app.use('/tags', tags)
+app.use('/posts', posts);
+app.use('/comments', comments);
 
 const port = process.env.PORT || 3000;
 

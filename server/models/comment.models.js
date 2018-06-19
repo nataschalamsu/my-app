@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const commentsSchema = Schema(
   {
-    comment: String,
+    comments: String,
     user: {
       type: Schema.Types.ObjectId,
       ref: 'user'
@@ -13,6 +13,6 @@ const commentsSchema = Schema(
   }
 )
 
-let comment = mongoose.model('comment', articleSchema)
+let comment = mongoose.model('comment', commentsSchema)
 
 module.exports = comment
