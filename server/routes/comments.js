@@ -4,7 +4,7 @@ const { isLogin, isAdmin, isUser } = require('../middlewares/authentication')
 
 routes
   .get('/', getAllComment)
-  .post('/', addComment)
-  .delete('/:id', deleteComment)
+  .post('/', isLogin, addComment)
+  .delete('/:id', isLogin, deleteComment)
   
 module.exports = routes

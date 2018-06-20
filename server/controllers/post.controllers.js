@@ -255,5 +255,36 @@ module.exports = {
           .status(400)
           .send(err)
       })
+  },
+  getPostByUserId: (req, res) => {
+    let idUser = req.headers.decoded.userId
+
+    post
+      .find({
+        user: idUser
+      })
+      .populate('user')
+      .populate({
+        path: 'comments',
+        populate: [{
+          path: 'user'
+        }]
+      })
+      .exec()
+      .then(response => {
+        res
+          .status(200)
+          .json({
+            message: 'query posts by user success',
+            data: response
+          })
+      })
+      .catch(err => {
+        res
+          .status(400)
+          .send({
+            message: err
+          })
+      })
   }
 }
