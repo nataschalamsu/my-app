@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
 const post = require('../models/post.models')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
   getAllPost: (req, res) => {
@@ -30,29 +30,40 @@ module.exports = {
       })
   },
   addPost: (req, res) => {
-    const user = req.headers.decoded.userId
-    const { status } = req.body
-    let image = req.imageURL
-    let newPost = new post({ user, status, image })
+    const token = req.headers.token
+    jwt.verify(token, process.env.SECRET, function(err, decoded) {
+      if (err) {
+        res
+          .status(500)
+          .json({
+            message: err
+          })
+      } else {
+        const user = decoded.userId
+        const { status } = req.body
+        let image = req.imageURL
+        let newPost = new post({ user, status, image })
 
-    newPost
-      .save(function(err, addNew) {
-        if (!err) {
-          res
-            .status(201)
-            .json({
-              message: 'added new post',
-              data: addNew
-            })
-        } else {
-          res
-            .status(400)
-            .json({
-              message: 'failed to add new post',
-              err
-            })
-        }
-      })
+        newPost
+          .save(function(err, addNew) {
+            if (!err) {
+              res
+                .status(201)
+                .json({
+                  message: 'added new post',
+                  data: addNew
+                })
+            } else {
+              res
+                .status(400)
+                .json({
+                  message: 'failed to add new post',
+                  err
+                })
+            }
+          })
+      }
+    })
   },
   editPost: (req, res) => {
     console.log("masuk", req.body)
@@ -115,176 +126,210 @@ module.exports = {
       })
   },
   likes: (req, res) => {
-    let idUser = req.headers.decoded.userId
-    let action = ''
-
-    post
-      .find({
-        _id: req.params.id
-      })
-      .populate('user')
-      .exec()
-      .then((result) => {
-        console.log("====>", result)
-        let liking = result[0].likes
-        let checkLikes = liking.indexOf(idUser) 
-        let disliking = result[0].dislikes
-        let checkDislikes = disliking.indexOf(idUser) 
-        if (idUser == result[0].user.id) {
-          console.log("masuk =====|", idUser)
-          res
-            .status(400)
-            .send({
-              message: "access denied"
-            })
-        } else {
-          if (checkDislikes !== -1) {
-            res
-              .status(400)
-              .send({
-                message: "you've been disliked"
-              })
-          } else {
-            if (checkLikes !== -1) {
-              action = '$pull'
-            } else {
-              action = '$push'
-            }
-          }
-
-          post
-            .update({
-              _id: req.params.id
-            }, {
-              [action]: {
-                likes: idUser
-              }
-            }, {
-              overwrite: false
-            }, function(err, response) {
-              if (!err) {
-                res
-                  .status(200)
-                  .send({
-                    message: "like success"
-                  })
-              } else {
-                res
-                  .status(400)
-                  .send({
-                    message: "like failed"
-                  })
-              }
-          })
-        }
-      })
-      .catch(err => {
+    const token = req.headers.token
+    jwt.verify(token, process.env.SECRET, function(err, decoded) {
+      if (err) {
         res
-          .status(400)
-          .send(err)
-      })
-  },
-  dislikes: (req, res) => {
-    let idUser = req.headers.decoded.userId
-    let action = ''
-
-    post
-      .find({
-        _id: req.params.id
-      })
-      .populate('user')
-      .exec()
-      .then(result => {
-        
-        let liking = result[0].likes
-        let checkLikes = liking.indexOf(idUser) 
-        let disliking = result[0].dislikes
-        let checkDislikes = disliking.indexOf(idUser) 
-        
-        if (idUser == result[0].user.id) {
-          console.log("masuk =====|", idUser)
-          console.log("id result", result[0].user.id)
-          res
-            .status(400)
-            .send({
-              message: "access denied"
-            })
-        } else {
-          if (checkLikes !== -1) {
-            res
-              .status(400)
-              .send({
-                message: "you've been liked"
-              })
-          } else {
-            if (checkDislikes !== -1) {
-              action = '$pull'
-            } else {
-              action = '$push'
-            }
-          }
-
-          post
-            .update({
-              _id: req.params.id
-            }, {
-              [action]: {
-                dislikes: idUser
-              }
-            }, {
-              overwrite: false
-            }, function(err, response) {
-              if (!err) {
-                res
-                  .status(200)
-                  .send({
-                    message: "dislike success"
-                  })
-              } else {
-                res
-                  .status(400)
-                  .send({
-                    message: "dislike failed"
-                  })
-              }
-            })
-        }
-      })
-      .catch(err => {
-        res
-          .status(400)
-          .send(err)
-      })
-  },
-  getPostByUserId: (req, res) => {
-    let idUser = req.headers.decoded.userId
-
-    post
-      .find({
-        user: idUser
-      })
-      .populate('user')
-      .populate({
-        path: 'comments',
-        populate: [{
-          path: 'user'
-        }]
-      })
-      .exec()
-      .then(response => {
-        res
-          .status(200)
+          .status(500)
           .json({
-            message: 'query posts by user success',
-            data: response
-          })
-      })
-      .catch(err => {
-        res
-          .status(400)
-          .send({
             message: err
           })
-      })
+      } else {
+        let idUser = decoded.userId
+        let action = ''
+
+        post
+          .find({
+            _id: req.params.id
+          })
+          .populate('user')
+          .exec()
+          .then((result) => {
+            console.log("====>", result)
+            let liking = result[0].likes
+            let checkLikes = liking.indexOf(idUser) 
+            let disliking = result[0].dislikes
+            let checkDislikes = disliking.indexOf(idUser) 
+            if (idUser == result[0].user.id) {
+              console.log("masuk =====|", idUser)
+              res
+                .status(400)
+                .send({
+                  message: "access denied"
+                })
+            } else {
+              if (checkDislikes !== -1) {
+                res
+                  .status(400)
+                  .send({
+                    message: "you've been disliked"
+                  })
+              } else {
+                if (checkLikes !== -1) {
+                  action = '$pull'
+                } else {
+                  action = '$push'
+                }
+              }
+
+              post
+                .update({
+                  _id: req.params.id
+                }, {
+                  [action]: {
+                    likes: idUser
+                  }
+                }, {
+                  overwrite: false
+                }, function(err, response) {
+                  if (!err) {
+                    res
+                      .status(200)
+                      .send({
+                        message: "like success"
+                      })
+                  } else {
+                    res
+                      .status(400)
+                      .send({
+                        message: "like failed"
+                      })
+                  }
+              })
+            }
+          })
+          .catch(err => {
+            res
+              .status(400)
+              .send(err)
+          })
+      }
+    })
+  },
+  dislikes: (req, res) => {
+    let token = req.headers.token
+    jwt.verify(token, process.env.SECRET, function(err, decoded) {
+      if (err) {
+        res
+          .status(500)
+          .json({
+            message: err
+          })
+      } else {
+        let idUser = decoded.userId
+        let action = ''
+
+        post
+          .find({
+            _id: req.params.id
+          })
+          .populate('user')
+          .exec()
+          .then(result => {
+            
+            let liking = result[0].likes
+            let checkLikes = liking.indexOf(idUser) 
+            let disliking = result[0].dislikes
+            let checkDislikes = disliking.indexOf(idUser) 
+            
+            if (idUser == result[0].user.id) {
+              console.log("masuk =====|", idUser)
+              console.log("id result", result[0].user.id)
+              res
+                .status(400)
+                .send({
+                  message: "access denied"
+                })
+            } else {
+              if (checkLikes !== -1) {
+                res
+                  .status(400)
+                  .send({
+                    message: "you've been liked"
+                  })
+              } else {
+                if (checkDislikes !== -1) {
+                  action = '$pull'
+                } else {
+                  action = '$push'
+                }
+              }
+
+              post
+                .update({
+                  _id: req.params.id
+                }, {
+                  [action]: {
+                    dislikes: idUser
+                  }
+                }, {
+                  overwrite: false
+                }, function(err, response) {
+                  if (!err) {
+                    res
+                      .status(200)
+                      .send({
+                        message: "dislike success"
+                      })
+                  } else {
+                    res
+                      .status(400)
+                      .send({
+                        message: "dislike failed"
+                      })
+                  }
+                })
+            }
+          })
+          .catch(err => {
+            res
+              .status(400)
+              .send(err)
+          })
+      }
+    })
+    
+  },
+  getPostByUserId: (req, res) => {
+    let token = req.headers.token
+    jwt.verify(token, process.env.SECRET, function(err, decoded) {
+      if (err) {
+        res
+          .status(500)
+          .json({
+            message: err
+          })
+      } else {
+        let idUser = decoded.userId
+
+        post
+          .find({
+            user: idUser
+          })
+          .populate('user')
+          .populate({
+            path: 'comments',
+            populate: [{
+              path: 'user'
+            }]
+          })
+          .exec()
+          .then(response => {
+            res
+              .status(200)
+              .json({
+                message: 'query posts by user success',
+                data: response
+              })
+          })
+          .catch(err => {
+            res
+              .status(400)
+              .send({
+                message: err
+              })
+          })
+      }
+    })
   }
 }

@@ -3,39 +3,34 @@ import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage } from '
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {signUp} from '../store/users/action'
+import {signIn} from '../store/users/action'
 
-class Home extends Component {
+class Login extends Component {
   constructor () {
     super ()
     this.state = {
-      username: '',
       email: '',
       password: ''
     }
   }
 
-  handleSignUp = async () => {
-    let newUser = {
-      username: this.state.username,
+  handleSignIn = async () => {
+    let user = {
       email: this.state.email,
       password: this.state.password
     }
-    console.log('from state===>', newUser)
-    await this.props.signUp(newUser)
+    console.log('user login ===> ', user)
+    await this.props.signIn(user)
     if (this.props.isLogin) {
-      console.log('ini props user ====>', this.props.user)
-      // this.setItem('userId', this.props.user.newData._id)
       try {
-        await AsyncStorage.setItem('userId', this.props.user.newData._id)
-        // return item
+        AsyncStorage.setItem('userId', this.props.user.nowLogin._id)
       } catch (err) {
         console.log(err)
       }
-      Alert.alert('Registration Success')
+      Alert.alert('Login Success')
       this.props.navigation.navigate('Timeline')
     } else {
-      Alert.alert('Registration Failed')
+      Alert.alert('Login Failed')
     }
   }
 
@@ -43,14 +38,7 @@ class Home extends Component {
     return (
       <View>
         <Text>An App</Text>
-        <Text>Register</Text>
-        <Text>Username:</Text>
-        <TextInput
-        name='username'
-        placeholder='Username'
-        value={this.state.username}
-        onChangeText={(username) => this.setState({username})}
-        />
+        <Text>Login</Text>
         <Text>Email:</Text>
         <TextInput
         name='email'
@@ -67,12 +55,9 @@ class Home extends Component {
         onChangeText={(password) => this.setState({password})}
         />
         <Button
-        title='Sign Up'
-        onPress={() => this.handleSignUp()}
+        title='Sign In'
+        onPress={() => this.handleSignIn()}
         />
-        <Text
-        onPress={() => this.props.navigation.navigate('Login')}
-        >Already a member? Login here</Text>
       </View>
     );
   }
@@ -94,7 +79,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  signUp
+  signIn
 }, dispatch)
 
-export default connect(mapStateToProps, mapDispatchToProps) (Home);
+export default connect(mapStateToProps, mapDispatchToProps) (Login);
