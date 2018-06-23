@@ -31,6 +31,7 @@ module.exports = {
   },
   addPost: (req, res) => {
     const token = req.headers.token
+    console.log('ini token backend ===>', token)
     jwt.verify(token, process.env.SECRET, function(err, decoded) {
       if (err) {
         res
@@ -43,7 +44,7 @@ module.exports = {
         const { status } = req.body
         let image = req.imageURL
         let newPost = new post({ user, status, image })
-
+        console.log('ini new post >>>>>> ', newPost)
         newPost
           .save(function(err, addNew) {
             if (!err) {

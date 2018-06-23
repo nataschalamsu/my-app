@@ -12,6 +12,8 @@ const BUCKET_CONFIG = {
 
 module.exports = {
   upload(req, res, next) {
+    console.log('isi req >>>>>>>', req)
+    console.log('isi req.file ===>', req.file)
     if (!req.file) return next('upload gagal')
 
     const storage = Storage({

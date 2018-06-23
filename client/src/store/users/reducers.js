@@ -10,7 +10,10 @@ const initialState = {
   data: {},
   isLogin: false,
   loading: false,
-  error: false
+  error: {
+    message: '',
+    status: false
+  }
 }
 
 console.log('initial state --->', initialState)
@@ -34,7 +37,8 @@ const users = (state={...initialState}, action) => {
     case SIGNOUT:
       return ({
         ...state,
-        isLogin: false
+        isLogin: false,
+        loading: false
       })
     case LOADING:
       return ({
@@ -46,7 +50,10 @@ const users = (state={...initialState}, action) => {
         ...state,
         isLogin: false,
         loading: false,
-        error: true
+        error: {
+          message: action.payload,
+          status: true
+        }
       })
     default:
       return state

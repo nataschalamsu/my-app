@@ -49,7 +49,12 @@ export const signIn = (data) => {
 
 export const signOut = () => {
   return async dispatch => {
-    dispatch(logout())
+    dispatch(loading())
+    try {
+      dispatch(logout())
+    } catch (err) {
+      dispatch(processFailed(err))
+    }
   }
 }
 

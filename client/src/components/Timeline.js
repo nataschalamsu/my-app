@@ -3,7 +3,10 @@ import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, FlatLis
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {getAllPost, addComment} from '../store/posts/action'
+import {getAllPost, addComment, likePost, dislikePost} from '../store/posts/action'
+import {signOut} from '../store/users/action'
+import Loading from './Loading';
+import NotFound from './NotFound';
 
 class Timeline extends Component {
   constructor () {
@@ -30,62 +33,115 @@ class Timeline extends Component {
     }
   }
 
+  handleSignOut = async () => {
+    try {
+      await AsyncStorage.removeItem('token')
+      await AsyncStorage.removeItem('userId')
+      await this.props.signOut()
+      this.props.navigation.navigate('Login')
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  handleLikePost = async (postId) => {
+    try {
+      await this.props.likePost(postId)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  handleDisikePost = async (postId) => {
+    try {
+      await this.props.dislikePost(postId)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   render() {
     const { posts, loading, error } = this.props
     // console.log(typeof posts)
     // console.log('ini posts ====> ', posts)
-    return (
-      <View>
-        <Text>Timeline</Text>
-        <TouchableOpacity style={styles.button}>
-          <Text
-          style={styles.txtbtn}
-          onPress={() => this.props.navigation.navigate('AddPost')}
-          >ADD POST</Text>
-        </TouchableOpacity>
-        <FlatList
-        data={ posts }
-        // keyExtractor={({item}) => item._id}
-        renderItem={({item}) => (
-          <View style={styles.container}>
-            <Text>{ item.user.email }</Text>
-            <View>
-              <Image source={{ uri: item.image }} style={styles.image}/>
-            </View>
-            <View>
-              <Text>{ item.status }</Text>
-              <View style={styles.commentBox}>
-                <Text>Comments</Text>
-                <FlatList
-                data={item.comments}
-                renderItem={({item}) => (
-                  <View>
-                    <Text>{item.user.email}</Text>
-                    <Text>{item.comments}</Text>
-                  </View>
-                )}
-                />
-                <Text>Comment:</Text>
-                <TextInput
-                name='comment'
-                style={styles.textInput}
-                multiline={true}
-                numberOfLines={3}
-                onChangeText={(comment) => this.setState({comment})}
-                />
-                <TouchableOpacity style={styles.button}>
-                  <Text
-                  style={styles.txtbtn}
-                  onPress={() => this.handleAddComment(item._id)}
-                  >COMMENT</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+    if (loading) {
+      return <Loading/>
+    } else if (error.message) {
+      return <NotFound error={error}/>
+    } else {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.subtitle}>Timeline</Text>
+          <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity style={styles.button}>
+              <Text
+              style={styles.txtbtn}
+              onPress={() => this.props.navigation.navigate('AddPost')}
+              >ADD POST</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Text
+              style={styles.txtbtn}
+              onPress={() => this.props.navigation.navigate('Profile')}
+              >PROFILE</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Text
+              style={styles.txtbtn}
+              onPress={() => {this.handleSignOut()}}
+              >SIGN OUT</Text>
+            </TouchableOpacity>
           </View>
-        )}
-        />
-      </View>
-    );
+          <FlatList
+          data={ posts }
+          // keyExtractor={({item}) => item._id}
+          renderItem={({item}) => (
+            <View style={styles.timeline}>
+              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{ item.user.email }</Text>
+              <View>
+                <Image source={{ uri: item.image }} style={styles.image}/>
+              </View>
+              <View>
+                <Text style={{ margin: 5, fontSize: 16 }}>{ item.status }</Text>
+                <View style={styles.commentBox}>
+                  <Text style={{ fontWeight: 'bold', borderBottomWidth: 1 }}>Comments</Text>
+                  <FlatList
+                  data={item.comments}
+                  renderItem={({item}) => (
+                    <View style={{ borderBottomWidth: 1 }}>
+                      <Text>{item.user.email}</Text>
+                      <Text>{item.comments}</Text>
+                    </View>
+                  )}
+                  />
+                  <Text>Comment:</Text>
+                  <TextInput
+                  name='comment'
+                  style={styles.textInput}
+                  multiline={true}
+                  numberOfLines={3}
+                  onChangeText={(comment) => this.setState({comment})}
+                  />
+                  <TouchableOpacity style={styles.button}>
+                    <Text
+                    style={styles.txtbtn}
+                    onPress={() => this.handleAddComment(item._id)}
+                    >COMMENT</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <Text
+              onPress={() => {this.handleLikePost(item._id)}}
+              >Like</Text>
+              <Text
+              onPress={() => {this.handleLikePost(item._id)}}
+              >Unlike</Text>
+            </View>
+          )}
+          />
+        </View>
+      );
+    }
   }
 }
 
@@ -93,11 +149,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 3,
     flexDirection: 'column',
-    borderColor: 'black',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    margin: 1,
-    borderWidth: 1
+    alignItems: 'center',
+    justifyContent: 'flex-start'
   },
   image: {
     height: 300,
@@ -110,7 +163,10 @@ const styles = StyleSheet.create({
     borderColor: 'black'
   },
   button: {
-    backgroundColor: 'skyblue'
+    backgroundColor: 'skyblue',
+    margin: 5,
+    padding: 5,
+    width: 100
   },
   txtbtn: {
     fontWeight: 'bold',
@@ -119,11 +175,33 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   commentBox: {
-    flex: 3,
-    padding: 2,
-    borderWidth: 1,
+    padding: 5,
+    backgroundColor: 'white',
     width: 300,
-    margin: 2
+    margin: 5
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 35
+  },
+  subtitle: {
+    fontWeight: 'bold',
+    fontSize: 25
+  },
+  label: {
+    fontSize: 18,
+    padding: 2
+  },
+  timeline: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: 'skyblue',
+    margin: 5,
+    padding: 5
+  },
+  text: {
+
   }
 })
 
@@ -139,7 +217,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   getAllPost,
-  addComment
+  addComment,
+  signOut,
+  likePost,
+  dislikePost
 }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps) (Timeline);

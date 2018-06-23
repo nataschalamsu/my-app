@@ -30,9 +30,9 @@ const RootStack = createStackNavigator({
   navigationOptions: {
     title: 'MY APP',
     headerStyle: {
-      backgroundColor: '#fe0229',
+      backgroundColor: '#144182',
     },
-    headerTintColor: '#fff9d4',
+    headerTintColor: 'white',
     headerTitleStyle: {
       fontWeight: 'bold',
     },
