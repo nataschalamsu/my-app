@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage } from 'react-native'
+import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, Image, ScrollView } from 'react-native'
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {signUp} from '../store/users/action'
+import logo from './people.png'
+import Loading from './Loading';
+import NotFound from './NotFound';
 
 class Home extends Component {
   constructor () {
@@ -48,47 +51,58 @@ class Home extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-      <Text style={styles.title}>Welcome to An App!</Text>
-        <View style={styles.form}>
-          <Text style={styles.subtitle}>Register</Text>
-          <Text style={styles.label}>Username:</Text>
-          <TextInput
-          name='username'
-          placeholder='Username'
-          value={this.state.username}
-          style={styles.textInput}
-          onChangeText={(username) => this.setState({username})}
-          />
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-          name='email'
-          placeholder='Email'
-          value={this.state.email}
-          style={styles.textInput}
-          onChangeText={(email) => this.setState({email})}
-          />
-          <Text style={styles.label}>Password:</Text>
-          <TextInput
-          name='password'
-          secureTextEntry={true}
-          placeholder='Password'
-          value={this.state.password}
-          style={styles.textInput}
-          onChangeText={(password) => this.setState({password})}
-          />
-          <Button
-          title='Sign Up'
-          onPress={() => this.handleSignUp()}
-          />
-          <Text
-          style={styles.label}
-          onPress={() => this.props.navigation.navigate('Login')}
-          >Already a member? Login here</Text>
+    const { loading, error } = this.props
+    // console.log('props profile =======', posts)
+    if (loading) {
+      return <Loading/>
+    } else if (error.message) {
+      return <NotFound error={error}/>
+    } else {
+      return (
+        <ScrollView>
+        <View style={styles.container}>
+        <Text style={styles.title}>Welcome to An App!</Text>
+        <Image source={ logo }/>
+          <View style={styles.form}>
+            <Text style={styles.subtitle}>Register</Text>
+            <Text style={styles.label}>Username:</Text>
+            <TextInput
+            name='username'
+            placeholder='Username'
+            value={this.state.username}
+            style={styles.textInput}
+            onChangeText={(username) => this.setState({username})}
+            />
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+            name='email'
+            placeholder='Email'
+            value={this.state.email}
+            style={styles.textInput}
+            onChangeText={(email) => this.setState({email})}
+            />
+            <Text style={styles.label}>Password:</Text>
+            <TextInput
+            name='password'
+            secureTextEntry={true}
+            placeholder='Password'
+            value={this.state.password}
+            style={styles.textInput}
+            onChangeText={(password) => this.setState({password})}
+            />
+            <Button
+            title='Sign Up'
+            onPress={() => this.handleSignUp()}
+            />
+            <Text
+            style={styles.label}
+            onPress={() => this.props.navigation.navigate('Login')}
+            >Already a member? Login here</Text>
+          </View>
         </View>
-      </View>
-    );
+        </ScrollView>
+      );
+    }
   }
 }
 
@@ -126,6 +140,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 5,
     borderColor: '#4776b9'
+  },
+  image: {
+    height: 150,
+    width: 150,
+    margin: 8
   }
 })
 

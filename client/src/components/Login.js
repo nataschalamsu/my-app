@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage } from 'react-native'
+import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, ScrollView } from 'react-native'
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {signIn} from '../store/users/action'
+import Loading from './Loading';
+import NotFound from './NotFound';
 
 class Login extends Component {
   constructor () {
@@ -40,34 +42,44 @@ class Login extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.form}>
-          <Text style={styles.subtitle}>Login</Text>
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-          style={styles.textInput}
-          name='email'
-          placeholder='Email'
-          value={this.state.email}
-          onChangeText={(email) => this.setState({email})}
-          />
-          <Text style={styles.label}>Password:</Text>
-          <TextInput
-          style={styles.textInput}
-          name='password'
-          secureTextEntry={true}
-          placeholder='Password'
-          value={this.state.password}
-          onChangeText={(password) => this.setState({password})}
-          />
-          <Button
-          title='Sign In'
-          onPress={() => this.handleSignIn()}
-          />
-        </View>
-      </View>
-    );
+    const { loading, error } = this.props
+    // console.log('props profile =======', posts)
+    if (loading) {
+      return <Loading/>
+    } else if (error.message) {
+      return <NotFound error={error}/>
+    } else {
+      return (
+        <ScrollView>
+          <View style={styles.container}>
+            <View style={styles.form}>
+              <Text style={styles.subtitle}>Login</Text>
+              <Text style={styles.label}>Email:</Text>
+              <TextInput
+              style={styles.textInput}
+              name='email'
+              placeholder='Email'
+              value={this.state.email}
+              onChangeText={(email) => this.setState({email})}
+              />
+              <Text style={styles.label}>Password:</Text>
+              <TextInput
+              style={styles.textInput}
+              name='password'
+              secureTextEntry={true}
+              placeholder='Password'
+              value={this.state.password}
+              onChangeText={(password) => this.setState({password})}
+              />
+              <Button
+              title='Sign In'
+              onPress={() => this.handleSignIn()}
+              />
+            </View>
+          </View>
+        </ScrollView>
+      );
+    }
   }
 }
 

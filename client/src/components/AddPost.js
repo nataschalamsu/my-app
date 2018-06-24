@@ -37,7 +37,7 @@ class AddPost extends Component {
       // formPost.append('images', image)
       formPost.append('image', {
         uri: image,
-        type: 'image', // or photo.type
+        type: 'image/jpeg', // or photo.type
         name: 'testPhotoName'
       });
       // fetch('https://my-app-h8.herokuapp.com/posts/user', {

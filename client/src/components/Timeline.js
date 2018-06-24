@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, FlatList, Image, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, FlatList, Image, TouchableOpacity, RefreshControl } from 'react-native'
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -12,12 +12,20 @@ class Timeline extends Component {
   constructor () {
     super ()
     this.state = {
-      comment: ''
+      comment: '',
+      refreshing: false
     }
   }
 
   componentDidMount() {
     this.props.getAllPost()
+  }
+
+  _onRefresh() {
+    this.setState({refreshing: true});
+    fetchData().then(() => {
+      this.setState({refreshing: false});
+    });
   }
 
   handleAddComment = async (postId) => {
@@ -113,6 +121,12 @@ class Timeline extends Component {
                       <Text>{item.comments}</Text>
                     </View>
                   )}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refreshing}
+                      onRefresh={this._onRefresh.bind(this)}
+                    />
+                  }
                   />
                   <Text>Comment:</Text>
                   <TextInput
@@ -130,12 +144,20 @@ class Timeline extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-              <Text
-              onPress={() => {this.handleLikePost(item._id)}}
-              >Like</Text>
-              <Text
-              onPress={() => {this.handleLikePost(item._id)}}
-              >Unlike</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity style={styles.button}>
+                  <Text
+                  style={styles.txtbtn}
+                  onPress={() => {this.handleLikePost(item._id)}}
+                  >Like</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                  <Text
+                  style={styles.txtbtn}
+                  onPress={() => {this.handleDislikePost(item._id)}}
+                  >Unlike</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
           />

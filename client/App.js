@@ -9,6 +9,8 @@ import Timeline from './src/components/Timeline'
 import Profile from './src/components/Profile'
 import AddPost from './src/components/AddPost'
 
+
+
 const RootStack = createStackNavigator({
   Home: {
     screen: Home

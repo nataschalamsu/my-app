@@ -37,9 +37,7 @@ export const addPost = (post) => {
         url: 'https://my-app-h8.herokuapp.com/posts',
         data: post,
         headers: {
-          token: token,
-          "Content-Type": "multipart/form-data",
-          'Accept': 'application/json'
+          token: token
         }
       })
       console.log('kalo sukses dapet ini ===> ', newPost.data)
