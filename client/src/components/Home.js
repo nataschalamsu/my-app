@@ -61,8 +61,8 @@ class Home extends Component {
       return (
         <ScrollView>
         <View style={styles.container}>
-        <Text style={styles.title}>Welcome to An App!</Text>
         <Image source={ logo }/>
+        <Text style={styles.title}>AN APP</Text>
           <View style={styles.form}>
             <Text style={styles.subtitle}>Register</Text>
             <Text style={styles.label}>Username:</Text>
@@ -108,7 +108,7 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 3,
+    flex: 5,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
@@ -120,13 +120,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 35,
+    fontSize: 30,
     margin: 5
   },
   subtitle: {
     fontWeight: 'bold',
     fontSize: 25,
     margin: 5,
+    alignSelf: 'center'
   },
   label: {
     fontSize: 18,
@@ -142,9 +143,10 @@ const styles = StyleSheet.create({
     borderColor: '#4776b9'
   },
   image: {
-    height: 150,
-    width: 150,
-    margin: 8
+    height: 50,
+    width: 50,
+    margin: 10,
+    padding: 5
   }
 })
 

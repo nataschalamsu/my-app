@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, Image, TouchableOpacity } from 'react-native'
 import { ImagePicker } from 'expo'
 
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
-import {addPost} from '../store/posts/action'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { addPost } from '../store/posts/action'
 
 class AddPost extends Component {
   constructor () {
@@ -13,6 +13,10 @@ class AddPost extends Component {
       post: '',
       image: null
     }
+  }
+
+  static navigationOptions = {
+    title: 'ADD POST'
   }
 
   pickImage = async () => {
@@ -34,21 +38,14 @@ class AddPost extends Component {
       const { post, image } = this.state
       const formPost = new FormData()
       formPost.append('status', post)
-      // formPost.append('images', image)
       formPost.append('image', {
         uri: image,
         type: 'image/jpeg', // or photo.type
         name: 'testPhotoName'
       });
-      // fetch('https://my-app-h8.herokuapp.com/posts/user', {
-      //   method: 'post',
-      //   body: data
-      // }).then(res => {
-      //   console.log(res)
-      // });
-
       await this.props.addPost(formPost)
       Alert.alert('Add Post Success!')
+      this.props.navigation.push('Timeline')
     } else {
       Alert.alert('Add Post Failed!')
     }
@@ -58,7 +55,7 @@ class AddPost extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.form}>
-          <Text style={styles.label}>Add Post</Text>
+          <Text style={styles.label}>Add New Post</Text>
           <TextInput
           name='post'
           placeholder="How are you?"
@@ -74,9 +71,8 @@ class AddPost extends Component {
               onPress={() => this.pickImage()}
               >ADD IMAGE</Text>
             </TouchableOpacity>
-            {this.state.image &&
-            <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />}
-
+            <Text>{this.state.image}</Text>
+            <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />
             <TouchableOpacity style={styles.button}>
               <Text
               style={styles.txtbtn}
@@ -84,15 +80,6 @@ class AddPost extends Component {
               >POST</Text>
             </TouchableOpacity>
           </View>
-          {/* <Button
-          title='Add Image'
-          onPress={() => this.pickImage()}
-          />
-          
-          <Button
-          title='Post'
-          onPress={() => this.handleAddPost()}
-          /> */}
         </View>
       </View>
     );
@@ -128,7 +115,7 @@ const styles = StyleSheet.create({
     margin: 2
   },
   button: {
-    backgroundColor: 'skyblue',
+    backgroundColor: '#144182',
     margin: 5,
     padding: 5,
     width: 100
@@ -142,10 +129,10 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => {
-  // console.log('ini isi state =>', state)
   const { isLogin } = state.users
-  const { data, loading, error } = state.posts
+  const { postData, loading, error } = state.posts
   return {
+    posts: postData,
     isLogin: isLogin,
     loading: loading,
     error

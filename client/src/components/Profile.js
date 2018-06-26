@@ -20,6 +20,10 @@ class Profile extends Component {
     this.props.getPostByUser()
   }
 
+  static navigationOptions = {
+    title: 'PROFILE'
+  }
+
   handleAddComment = async (postId) => {
     let newComment = {
       id: postId,
@@ -66,6 +70,14 @@ class Profile extends Component {
     }
   }
 
+  dateFormat (dates) {
+    let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    let date = new Date(dates).getDate()
+    let month = new Date(dates).getMonth()
+    let year = new Date(dates).getFullYear()
+    return (date < 10)? `0${date} ${months[month]} ${year}`: `${date} ${months[month]} ${year}`
+  }
+
   render() {
     const { posts, loading, error } = this.props
     // console.log('props profile =======', posts)
@@ -76,7 +88,6 @@ class Profile extends Component {
     } else {
       return (
         <View style={styles.container}>
-          <Text style={styles.subtitle}>Profile</Text>
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity style={styles.button}>
               <Text
@@ -93,6 +104,7 @@ class Profile extends Component {
           </View>
           <FlatList
           data={posts}
+          keyExtractor={(item) => 'id' + item._id}
           renderItem={({item}) => (
             <View style={styles.timeline}>
               <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{ item.user.email }</Text>
@@ -100,13 +112,14 @@ class Profile extends Component {
                 <Image source={{ uri: item.image }} style={styles.image}/>
               </View>
               <Text style={{ margin: 5, fontSize: 16 }}>{ item.status }</Text>
+              <Text style={{ margin: 3 }}>posted at: {this.dateFormat( item.createdAt )}</Text>
                 <View style={styles.commentBox}>
-                  <Text style={{ fontWeight: 'bold', borderBottomWidth: 1 }}>Comments</Text>
+                  <Text style={{ fontWeight: 'bold', borderBottomWidth: 1, fontSize: 14 }}>Comments</Text>
                   <FlatList
                   data={item.comments}
                   renderItem={({item}) => (
-                    <View style={{ borderBottomWidth: 1 }}>
-                      <Text>{item.user.email}</Text>
+                    <View style={{ borderBottomWidth: 1, margin: 5 }}>
+                      <Text style={{ textDecorationLine: 'underline', fontWeight: 'bold' }}>{item.user.email}</Text>
                       <Text>{item.comments}</Text>
                       <Text
                       style={{ color: 'red' }}
@@ -183,7 +196,7 @@ const styles = StyleSheet.create({
     padding: 5
   },
   button: {
-    backgroundColor: 'skyblue',
+    backgroundColor: '#144182',
     margin: 5,
     padding: 5,
     width: 100

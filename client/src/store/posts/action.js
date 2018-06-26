@@ -18,7 +18,6 @@ export const getAllPost = () => {
     dispatch(loading())
     axios.get('https://my-app-h8.herokuapp.com/posts')
       .then(({data}) => {
-        // console.log('data yang didapat ______ ', data)
         dispatch(getAllPostSuccess(data.data))
       })
       .catch(err => dispatch(processFailed(err)))
@@ -42,6 +41,7 @@ export const addPost = (post) => {
       })
       console.log('kalo sukses dapet ini ===> ', newPost.data)
       dispatch(addPostSuccess(newPost.data))
+      dispatch(getAllPost())
     } catch (err) {
       dispatch(processFailed(err))
     }
@@ -62,6 +62,7 @@ export const addComment = (data) => {
         })
         .then(response => {
           dispatch(addCommentSuccess(data))
+          dispatch(getAllPost())
         })
         .catch(err => {
           dispatch(processFailed(err))
@@ -94,6 +95,8 @@ export const deletePost = (postId) => {
       let token = await AsyncStorage.getItem('token')
       await axios.delete(`https://my-app-h8.herokuapp.com/posts/${postId}`)
       dispatch(deletePostSuccess())
+      dispatch(getPostByUser())
+      dispatch(getAllPost())
     } catch (err) {
       dispatch(processFailed(err))
     }
@@ -107,6 +110,8 @@ export const deleteComment = (commentId) => {
       let token = await AsyncStorage.getItem('token')
       await axios.delete(`https://my-app-h8.herokuapp.com/posts/${commentId}`)
       dispatch(deleteCommentSuccess())
+      dispatch(getPostByUser())
+      dispatch(getAllPost())
     } catch (err) {
       dispatch(processFailed(err))
     }
@@ -117,9 +122,15 @@ export const likePost = (postId) => {
   return async dispatch => {
     dispatch(loading())
     try {
+      console.log('masuk like ---> ', postId)
       let token = await AsyncStorage.getItem('token')
-      await axios.get(`https://my-app-h8.herokuapp.com/posts/likes/${postId}`)
+      await axios.get(`https://my-app-h8.herokuapp.com/posts/likes/${postId}`, {
+        headers: {
+          token: token
+        }
+      })
       dispatch(likePostSuccess())
+      dispatch(getAllPost())
     } catch (err) {
       dispatch(processFailed(err))
     }
@@ -130,9 +141,15 @@ export const dislikePost = (postId) => {
   return async dispatch => {
     dispatch(loading())
     try {
+      console.log('masuk dislike ---> ', postId)
       let token = await AsyncStorage.getItem('token')
-      await axios.get(`https://my-app-h8.herokuapp.com/posts/dislikes/${postId}`)
+      await axios.get(`https://my-app-h8.herokuapp.com/posts/dislikes/${postId}`, {
+        headers: {
+          token: token
+        }
+      })
       dispatch(dislikePostSuccess())
+      dispatch(getAllPost())
     } catch (err) {
       dispatch(processFailed(err))
     }

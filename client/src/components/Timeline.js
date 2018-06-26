@@ -13,31 +13,35 @@ class Timeline extends Component {
     super ()
     this.state = {
       comment: '',
-      refreshing: false
+      refreshing: false,
+      like: 'Like',
+      dislike: 'Dislike'
     }
+  }
+
+  static navigationOptions = {
+    title: 'TIMELINE',
+    headerLeft: null
   }
 
   componentDidMount() {
     this.props.getAllPost()
   }
 
-  _onRefresh() {
-    this.setState({refreshing: true});
-    fetchData().then(() => {
-      this.setState({refreshing: false});
-    });
-  }
-
   handleAddComment = async (postId) => {
-    let newComment = {
-      id: postId,
-      comments: this.state.comment
-    }
-    try {
-      await this.props.addComment(newComment)
-      Alert.alert('Thanks for your comment!')
-    } catch (err) {
-      Alert.alert('Oops!')
+    if (!this.state.comment) {
+      Alert.alert("Fill the comment box to comment this post" )
+    } else {
+      let newComment = {
+        id: postId,
+        comments: this.state.comment
+      }
+      try {
+        await this.props.addComment(newComment)
+        // await this.props.getAllPost()
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 
@@ -52,26 +56,37 @@ class Timeline extends Component {
     }
   }
 
-  handleLikePost = async (postId) => {
+  handleLikePost = async (postId, post) => {
+    // console.log('ini post >>>>>', postId)
     try {
       await this.props.likePost(postId)
+      // this.setState({ like: 'Liked' })
+      await this.props.getAllPost()
     } catch (err) {
       console.log(err)
     }
   }
 
-  handleDisikePost = async (postId) => {
+  handleDislikePost = async (postId) => {
     try {
       await this.props.dislikePost(postId)
+      // this.setState({ dislike: 'Disliked' })
+      await this.props.getAllPost()
     } catch (err) {
       console.log(err)
     }
+  }
+
+  dateFormat (dates) {
+    let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    let date = new Date(dates).getDate()
+    let month = new Date(dates).getMonth()
+    let year = new Date(dates).getFullYear()
+    return (date < 10)? `0${date} ${months[month]} ${year}`: `${date} ${months[month]} ${year}`
   }
 
   render() {
     const { posts, loading, error } = this.props
-    // console.log(typeof posts)
-    // console.log('ini posts ====> ', posts)
     if (loading) {
       return <Loading/>
     } else if (error.message) {
@@ -79,7 +94,6 @@ class Timeline extends Component {
     } else {
       return (
         <View style={styles.container}>
-          <Text style={styles.subtitle}>Timeline</Text>
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity style={styles.button}>
               <Text
@@ -102,7 +116,7 @@ class Timeline extends Component {
           </View>
           <FlatList
           data={ posts }
-          // keyExtractor={({item}) => item._id}
+          keyExtractor={(item) => 'id' + item._id}
           renderItem={({item}) => (
             <View style={styles.timeline}>
               <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{ item.user.email }</Text>
@@ -111,22 +125,23 @@ class Timeline extends Component {
               </View>
               <View>
                 <Text style={{ margin: 5, fontSize: 16 }}>{ item.status }</Text>
+                <Text style={{ margin: 5 }}>posted at: {this.dateFormat( item.createdAt )}</Text>
+                <View style={{ flexDirection: 'row', margin: 5 }}>
+                  <Text>{ item.likes.length } Likes </Text>
+                  <Text>{ item.dislikes.length } Dislikes</Text>
+                </View>
                 <View style={styles.commentBox}>
-                  <Text style={{ fontWeight: 'bold', borderBottomWidth: 1 }}>Comments</Text>
+                  <Text style={{ fontWeight: 'bold', borderBottomWidth: 1, fontSize: 14 }}>Comments</Text>
                   <FlatList
                   data={item.comments}
                   renderItem={({item}) => (
-                    <View style={{ borderBottomWidth: 1 }}>
-                      <Text>{item.user.email}</Text>
+                    <View style={{ borderBottomWidth: 1, margin: 5 }}>
+                      <Text style={{ textDecorationLine: 'underline', fontWeight: 'bold' }}>
+                        {item.user.email}
+                      </Text>
                       <Text>{item.comments}</Text>
                     </View>
                   )}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this._onRefresh.bind(this)}
-                    />
-                  }
                   />
                   <Text>Comment:</Text>
                   <TextInput
@@ -145,17 +160,17 @@ class Timeline extends Component {
                 </View>
               </View>
               <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.buttonlike}>
                   <Text
                   style={styles.txtbtn}
-                  onPress={() => {this.handleLikePost(item._id)}}
-                  >Like</Text>
+                  onPress={() => this.handleLikePost(item._id)}
+                  >{this.state.like}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.buttonlike}>
                   <Text
                   style={styles.txtbtn}
-                  onPress={() => {this.handleDislikePost(item._id)}}
-                  >Unlike</Text>
+                  onPress={() => this.handleDislikePost(item._id)}
+                  >{this.state.dislike}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -185,7 +200,7 @@ const styles = StyleSheet.create({
     borderColor: 'black'
   },
   button: {
-    backgroundColor: 'skyblue',
+    backgroundColor: '#144182',
     margin: 5,
     padding: 5,
     width: 100
@@ -222,8 +237,11 @@ const styles = StyleSheet.create({
     margin: 5,
     padding: 5
   },
-  text: {
-
+  buttonlike: {
+    backgroundColor: '#040615',
+    margin: 5,
+    padding: 5,
+    width: 100
   }
 })
 

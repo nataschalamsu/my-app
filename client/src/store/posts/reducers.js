@@ -63,12 +63,18 @@ const posts = (state={...initialState}, action) => {
     case LIKE_SUCCESS:
       return ({
         ...state,
-        loading: false
+        loading: false,
+        error: {
+          status: false
+        }
       })
     case DISLIKE_SUCCESS:
       return ({
         ...state,
-        loading: false
+        loading: false,
+        error: {
+          status: false
+        }
       })
     case LOADING:
       return ({

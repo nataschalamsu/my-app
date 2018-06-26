@@ -33,7 +33,6 @@ class Login extends Component {
         } catch (err) {
           console.log(err)
         }
-        Alert.alert('Login Success')
         this.props.navigation.navigate('Timeline')
       } else {
         Alert.alert('Login Failed')
