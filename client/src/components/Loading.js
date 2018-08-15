@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
-// import kucing from './kucing.gif'
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  Image 
+} from 'react-native';
 
 class Loading extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image source={ require('./kucing.gif') }/>
+        <Image source={ require('../assets/kucing.gif') }/>
       </View>
     );
   }
@@ -14,6 +18,7 @@ class Loading extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center'

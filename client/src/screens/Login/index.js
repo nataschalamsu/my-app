@@ -3,9 +3,9 @@ import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, ScrollV
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {signIn} from '../store/users/action'
-import Loading from './Loading';
-import NotFound from './NotFound';
+import {signIn} from '../../store/users/action'
+import Loading from '../../components/Loading'
+import NotFound from '../../components/NotFound'
 
 class Login extends Component {
   constructor () {
@@ -14,6 +14,14 @@ class Login extends Component {
       email: '',
       password: ''
     }
+  }
+
+  componentDidMount() {
+    AsyncStorage.getItem('userId', (error, result) => {
+      if (result) {
+        this.props.navigation.navigate('Timeline')
+      }
+    })
   }
 
   handleSignIn = async () => {
@@ -42,7 +50,6 @@ class Login extends Component {
 
   render() {
     const { loading, error } = this.props
-    // console.log('props profile =======', posts)
     if (loading) {
       return <Loading/>
     } else if (error.message) {

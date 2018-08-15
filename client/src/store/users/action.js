@@ -13,16 +13,13 @@ export const signUp = (data) => {
   return async dispatch => {
     dispatch(loading())
     try {
-      // console.log('masuk ====>', data)
       const user = await axios({
         method: 'post',
-        url: 'https://my-app-h8.herokuapp.com/users/signup',
+        url: 'http://ff1ff19d.ngrok.io/users/signup',
         data: data
       })
-      // console.log('data ===> ', user)
       dispatch(signUpSuccess(user.data))
     } catch (err) {
-      // console.log('error masuk sini', err)
       dispatch(processFailed())
     }
   }
@@ -32,10 +29,9 @@ export const signIn = (data) => {
   return async dispatch => {
     dispatch(loading())
     try {
-      // console.log('masuk sign in ====>', data)
       const user = await axios({
         method: 'post',
-        url: 'https://my-app-h8.herokuapp.com/users/signin',
+        url: 'http://ff1ff19d.ngrok.io/users/signin',
         data: data
       })
       console.log('user data===>', user.data)

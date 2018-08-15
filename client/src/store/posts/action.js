@@ -16,7 +16,7 @@ import { AsyncStorage } from 'react-native';
 export const getAllPost = () => {
   return dispatch => {
     dispatch(loading())
-    axios.get('https://my-app-h8.herokuapp.com/posts')
+    axios.get('http://ff1ff19d.ngrok.io/posts')
       .then(({data}) => {
         dispatch(getAllPostSuccess(data.data))
       })
@@ -33,7 +33,7 @@ export const addPost = (post) => {
       console.log('ini token ====> ', token)
       const newPost = await axios({
         method: 'post',
-        url: 'https://my-app-h8.herokuapp.com/posts',
+        url: 'http://ff1ff19d.ngrok.io/posts',
         data: post,
         headers: {
           token: token
@@ -55,7 +55,7 @@ export const addComment = (data) => {
       let token = await AsyncStorage.getItem('token')
       console.log('token=====', token)
       axios
-        .post('https://my-app-h8.herokuapp.com/comments', data, {
+        .post('http://ff1ff19d.ngrok.io/comments', data, {
           headers: {
             token: token
           }
@@ -75,7 +75,7 @@ export const getPostByUser = (data) => {
     dispatch(loading())
       let token = await AsyncStorage.getItem('token')
       console.log('token=====', token)
-      axios.get('https://my-app-h8.herokuapp.com/posts/user', {
+      axios.get('http://ff1ff19d.ngrok.io/posts/user', {
         headers: {
           token: token
         }
@@ -93,7 +93,7 @@ export const deletePost = (postId) => {
     dispatch(loading())
     try {
       let token = await AsyncStorage.getItem('token')
-      await axios.delete(`https://my-app-h8.herokuapp.com/posts/${postId}`)
+      await axios.delete(`http://ff1ff19d.ngrok.io/posts/${postId}`)
       dispatch(deletePostSuccess())
       dispatch(getPostByUser())
       dispatch(getAllPost())
@@ -108,7 +108,7 @@ export const deleteComment = (commentId) => {
     dispatch(loading())
     try {
       let token = await AsyncStorage.getItem('token')
-      await axios.delete(`https://my-app-h8.herokuapp.com/posts/${commentId}`)
+      await axios.delete(`http://ff1ff19d.ngrok.io/posts/${commentId}`)
       dispatch(deleteCommentSuccess())
       dispatch(getPostByUser())
       dispatch(getAllPost())
@@ -124,7 +124,7 @@ export const likePost = (postId) => {
     try {
       console.log('masuk like ---> ', postId)
       let token = await AsyncStorage.getItem('token')
-      await axios.get(`https://my-app-h8.herokuapp.com/posts/likes/${postId}`, {
+      await axios.get(`http://ff1ff19d.ngrok.io/posts/likes/${postId}`, {
         headers: {
           token: token
         }
@@ -143,7 +143,7 @@ export const dislikePost = (postId) => {
     try {
       console.log('masuk dislike ---> ', postId)
       let token = await AsyncStorage.getItem('token')
-      await axios.get(`https://my-app-h8.herokuapp.com/posts/dislikes/${postId}`, {
+      await axios.get(`http://ff1ff19d.ngrok.io/posts/dislikes/${postId}`, {
         headers: {
           token: token
         }

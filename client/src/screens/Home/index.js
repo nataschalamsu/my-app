@@ -1,12 +1,21 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, Alert, AsyncStorage, Image, ScrollView } from 'react-native'
+import { View, 
+  StyleSheet, 
+  Text, 
+  TextInput, 
+  Button, 
+  Alert, 
+  AsyncStorage, 
+  Image, 
+  ScrollView 
+} from 'react-native'
 
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
-import {signUp} from '../store/users/action'
-import logo from './people.png'
-import Loading from './Loading';
-import NotFound from './NotFound';
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { signUp } from '../../store/users/action'
+import logo from '../../assets/people.png'
+import Loading from '../../components/Loading'
+import NotFound from '../../components/NotFound'
 
 class Home extends Component {
   constructor () {
@@ -56,7 +65,6 @@ class Home extends Component {
 
   render() {
     const { loading, error } = this.props
-    // console.log('props profile =======', posts)
     if (loading) {
       return <Loading/>
     } else if (error.message) {
@@ -155,7 +163,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => {
-  // console.log('ini isi state =>', state)
   const { data, isLogin, loading, error } = state.users
   return {
     user: data,
