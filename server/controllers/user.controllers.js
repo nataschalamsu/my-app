@@ -36,7 +36,6 @@ module.exports = {
     })
   },
   signIn: (req, res) => {
-    // console.log("========>", process.env)
     const SECRET = process.env.SECRET
     const { email, password } = req.body
     user
